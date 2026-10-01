@@ -34,7 +34,7 @@ export class HttpService {
     options?: HttpOptions
   ): Observable<T> {
     const url = `${environment.apiUrl}${endpoint}`;
-    
+
     // Convertimos los parámetros genéricos a HttpParams de Angular
     let httpParams = new HttpParams();
     if (options?.params) {
@@ -64,7 +64,7 @@ export class HttpService {
   }
 
   // --- MÉTODOS DE CONVENIENCIA PARA NO REPETIR CÓDIGO ---
-  
+
   public get<T>(endpoint: string, options?: HttpOptions): Observable<T> {
     return this.request<T>('GET', endpoint, undefined, options);
   }
