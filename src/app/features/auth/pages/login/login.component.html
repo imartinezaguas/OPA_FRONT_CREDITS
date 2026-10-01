@@ -1,0 +1,58 @@
+    <div class="login-container d-flex">
+      <!-- Lado Izquierdo (Verde) -->
+      <div class="login-left d-flex">
+        <div class="brand d-flex align-center gap-2">
+          <div class="logo-icon">P</div>
+          <div>
+            <strong>Provisión</strong>
+            <span>Crédito solidario</span>
+          </div>
+        </div>
+        
+        <div class="hero-text">
+          <p class="subtitle">GESTIÓN FINANCIERA SOLIDARIA</p>
+          <h1>Decisiones de crédito<br>claras, trazables y<br>humanas.</h1>
+          <p class="description">Una vista operativa para acompañar cada solicitud desde el<br>registro hasta el desembolso.</p>
+        </div>
+
+        <div class="footer-note">
+          <small>Entorno visual de demostración</small>
+        </div>
+      </div>
+
+      <!-- Lado Derecho (Gris Claro) -->
+      <div class="login-right d-flex align-center">
+        <div class="login-form-wrapper">
+          <p class="section-title">ACCESO AL SISTEMA</p>
+          <h2>Bienvenido de nuevo</h2>
+          <p class="instruction">Ingresa tus datos para consultar la cartera.</p>
+
+          <form (ngSubmit)="login()" class="d-flex" style="flex-direction: column; gap: 16px; margin-top: 32px;">
+            <div>
+              <label>Correo / Usuario</label>
+              <input type="text" name="username" [(ngModel)]="credentials.username" placeholder="admin" required>
+            </div>
+            
+            <div>
+              <div class="d-flex justify-between">
+                <label>Contraseña</label>
+                <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+              </div>
+              <input type="password" name="password" [(ngModel)]="credentials.password" placeholder="********" required>
+            </div>
+            
+            @if (errorMessage()) {
+              <div style="color: var(--status-rechazado-text); font-size: 12px; text-align: center; font-weight: 500;">
+                {{ errorMessage() }}
+              </div>
+            }
+
+            <button type="submit" class="btn-primary" style="width: 100%; margin-top: 8px;" [disabled]="isLoading()">
+              {{ isLoading() ? 'Autenticando...' : 'Ingresar' }}
+            </button>
+          </form>
+
+          <p class="demo-note">Conectado a la API local (Auth/login).</p>
+        </div>
+      </div>
+    </div>

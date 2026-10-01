@@ -1,0 +1,95 @@
+<div class="drawer-overlay" [class.open]="isOpen" (click)="closeDrawer()"></div>
+<div class="drawer" [class.open]="isOpen">
+  <div class="drawer-header d-flex justify-between align-center">
+    <h3>Registrar nuevo crédito</h3>
+    <button class="btn-close" (click)="closeDrawer()" title="Cerrar">✕</button>
+  </div>
+
+  <div class="drawer-body">
+    <form (ngSubmit)="submitForm()" #creditForm="ngForm" class="d-flex" style="flex-direction: column; gap: 16px;">
+      
+      <div class="form-group">
+        <label>Identificación Asociado</label>
+        <input type="text" name="associateIdentification" 
+               [ngModel]="formData.associateIdentification" 
+               (input)="onIdentificationInput($event)"
+               required pattern="^[0-9]+$" placeholder="Ej: 1001234567">
+      </div>
+
+      <div class="form-group">
+        <label>Nombre Asociado</label>
+        <input type="text" name="associateName" 
+               [ngModel]="formData.associateName" 
+               (input)="onNameInput($event)"
+               required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" placeholder="Ej: Juan Perez">
+      </div>
+
+      <div class="d-flex gap-2">
+        <div class="form-group" style="flex: 1;">
+          <label>Tipo Crédito</label>
+          <select name="creditType" [(ngModel)]="formData.creditType" required>
+            <option value="" disabled>Seleccione...</option>
+            @for (type of creditTypes; track type) {
+              <option [value]="type">{{type}}</option>
+            }
+          </select>
+        </div>
+        
+        <div class="form-group" style="flex: 1;">
+          <label>Forma Pago</label>
+          <select name="paymentMethod" [(ngModel)]="formData.paymentMethod" required>
+            <option value="" disabled>Seleccione...</option>
+            @for (method of paymentMethods; track method) {
+              <option [value]="method">{{method}}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Valor Solicitado ($)</label>
+        <input type="text" name="valueDisplay" 
+               [ngModel]="valueDisplay" 
+               (input)="onValueInput($event)" 
+               required pattern="^[0-9.]+$" placeholder="Ej: 15.000.000" autocomplete="off">
+      </div>
+
+      <div class="d-flex gap-2">
+        <div class="form-group" style="flex: 1;">
+          <label>Tasa Interés (%)</label>
+          <input type="number" name="interestRate" [(ngModel)]="formData.interestRate" required step="0.1" placeholder="Ej: 1.5">
+        </div>
+        
+        <div class="form-group" style="flex: 1;">
+          <label>Nº Cuotas</label>
+          <input type="number" name="numberOfInstallments" [(ngModel)]="formData.numberOfInstallments" required placeholder="Ej: 36">
+        </div>
+      </div>
+
+      <!-- Modal Alert para Errores en Create -->
+      @if (errorMessage()) {
+      <div class="modal-overlay" style="z-index: 3000;">
+        <div class="modal-content text-center" style="max-width: 350px;">
+          <div class="warning-icon-svg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#D32F2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h4 class="text-danger" style="margin-bottom: 8px;">Atención</h4>
+          <p [innerHTML]="errorMessage()"></p>
+          <div class="d-flex justify-center mt-3">
+            <button type="button" class="btn-primary" (click)="errorMessage.set(null)">Entendido</button>
+          </div>
+        </div>
+      </div>
+      }
+
+      <div class="drawer-footer d-flex gap-2 justify-end" style="margin-top: 24px;">
+        <button type="button" class="btn-outline" (click)="closeDrawer()" [disabled]="isLoading()">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="!creditForm.form.valid || isLoading() || formData.requestedValue <= 0">
+          {{ isLoading() ? 'Guardando...' : 'Crear crédito' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

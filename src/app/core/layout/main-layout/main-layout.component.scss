@@ -1,0 +1,66 @@
+    .layout-container { height: 100vh; width: 100%; overflow: hidden; }
+    
+    .sidebar {
+      width: 250px;
+      background-color: #F5F7F6;
+      border-right: 1px solid var(--border-color);
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .sidebar-top { padding: 24px; }
+    .brand strong { font-size: 15px; display: block; color: var(--text-main); }
+    .brand span { font-size: 11px; color: var(--text-muted); }
+    .logo-icon {
+      background: var(--primary); color: white;
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      border-radius: 4px; font-weight: bold; font-size: 14px;
+    }
+    
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 6px;
+      text-decoration: none; color: var(--text-muted);
+      font-size: 14px; font-weight: 500; margin-bottom: 4px;
+    }
+    .nav-item.active { background-color: var(--primary); color: white; }
+    .nav-item:not(.active):hover { background-color: #E6EBE9; }
+    .badge { margin-left: auto; background: #E6EBE9; color: var(--text-main); padding: 2px 6px; border-radius: 12px; font-size: 10px; font-weight: bold; }
+    .nav-item.active .badge { background: rgba(255,255,255,0.2); color: white; }
+
+    .sidebar-bottom {
+      background-color: var(--primary);
+      padding: 24px; color: white;
+    }
+    .session-label { font-size: 10px; letter-spacing: 1px; opacity: 0.6; margin-bottom: 8px; font-weight: 600; }
+    .session-info strong { display: block; font-size: 14px; margin-bottom: 2px; }
+    .session-info span { font-size: 11px; opacity: 0.7; display: block; margin-bottom: 16px; }
+    
+    .logout-btn {
+      background: transparent; color: white; border: none; font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 8px; padding: 0; opacity: 0.8;
+    }
+    .logout-btn:hover { opacity: 1; }
+
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      background-color: var(--bg-main);
+    }
+
+    @media (max-width: 768px) {
+      .layout-container { flex-direction: column; }
+      .sidebar { 
+        width: 100%; height: auto; border-right: none; 
+        border-bottom: 1px solid var(--border-color); 
+        flex-direction: row; align-items: center; padding: 0 16px;
+      }
+      .sidebar-top { 
+        padding: 12px 0; display: flex; align-items: center; 
+        width: 100%; justify-content: space-between; 
+      }
+      .brand { margin-bottom: 0 !important; }
+      .brand strong, .brand span { display: none; }
+      nav { display: flex; gap: 8px; overflow-x: auto; }
+      .nav-item { margin-bottom: 0; padding: 8px 12px; white-space: nowrap; }
+      .sidebar-bottom { display: none; }
+    }

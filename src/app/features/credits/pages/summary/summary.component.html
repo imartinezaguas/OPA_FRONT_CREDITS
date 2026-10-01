@@ -1,0 +1,59 @@
+<div class="dashboard-header d-flex justify-between align-center" style="margin-bottom: 32px;">
+  <div>
+    <p class="section-title"
+      style="font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;">
+      Métricas</p>
+    <h2 style="font-size: 24px; font-weight: 600; margin: 0; color: var(--text-main);">Panel de Resumen</h2>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-icon icon-blue">📋</div>
+    <span class="kpi-label">Total Solicitudes</span>
+    <h3>{{ summary()?.totalCredits || 0 }}</h3>
+    <span class="kpi-trend">En el sistema</span>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-icon icon-gray">📝</div>
+    <span class="kpi-label">Solicitado</span>
+    <h3>{{ summary()?.quantityByStatus?.['Requested'] || 0 }}</h3>
+    <span class="kpi-trend">Nuevos ingresos</span>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-icon icon-orange">🔍</div>
+    <span class="kpi-label">En Estudio</span>
+    <h3>{{ summary()?.quantityByStatus?.['UnderStudy'] || 0 }}</h3>
+    <span class="kpi-trend">En revisión de analista</span>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-icon icon-green">✅</div>
+    <span class="kpi-label">Aprobados</span>
+    <h3>{{ summary()?.quantityByStatus?.['Approved'] || 0 }}</h3>
+    <span class="kpi-trend">Aprobados exitosamente</span>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-icon icon-purple">💰</div>
+    <span class="kpi-label">Desembolsados</span>
+    <h3>{{ summary()?.quantityByStatus?.['Disbursed'] || 0 }}</h3>
+    <span class="kpi-trend">Entregados al asociado</span>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-icon icon-red">❌</div>
+    <span class="kpi-label">Rechazados</span>
+    <h3>{{ summary()?.quantityByStatus?.['Rejected'] || 0 }}</h3>
+    <span class="kpi-trend">Sin viabilidad</span>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-icon icon-gray">🚫</div>
+    <span class="kpi-label">Cancelados</span>
+    <h3>{{ summary()?.quantityByStatus?.['Cancelled'] || 0 }}</h3>
+    <span class="kpi-trend">Borrado lógico</span>
+  </div>
+</div>

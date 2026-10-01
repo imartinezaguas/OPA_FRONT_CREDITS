@@ -1,0 +1,175 @@
+<div class="dashboard-header d-flex justify-between align-center">
+  <div>
+    <p class="section-title">PANEL LOCAL</p>
+    <h2>Gestión de solicitudes de crédito</h2>
+  </div>
+  <div class="actions d-flex gap-2">
+    <button class="btn-primary" (click)="openDrawer()">+ Nuevo crédito</button>
+  </div>
+</div>
+
+<!-- Filtros y Tabla -->
+<!-- Modal Alert global para Dashboard -->
+@if (errorMessage()) {
+<div class="modal-overlay" style="z-index: 3000;">
+  <div class="modal-content text-center" style="max-width: 350px;">
+    <div class="warning-icon-svg">
+      <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#D32F2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+    </div>
+    <h4 class="text-danger" style="margin-bottom: 8px;">Atención</h4>
+    <p [innerHTML]="errorMessage()"></p>
+    <div class="d-flex justify-center mt-3">
+      <button class="btn-primary" (click)="errorMessage.set(null)">Entendido</button>
+    </div>
+  </div>
+</div>
+}
+
+@if (successMessage()) {
+<div class="modal-overlay" style="z-index: 3000;">
+  <div class="modal-content text-center" style="max-width: 350px;">
+    <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#197B42" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    </div>
+    <h4 style="margin-bottom: 8px; color: #197B42;">¡Éxito!</h4>
+    <p [innerHTML]="successMessage()"></p>
+    <div class="d-flex justify-center mt-3">
+      <button class="btn-primary" style="background-color: #197B42;" (click)="successMessage.set(null)">Aceptar</button>
+    </div>
+  </div>
+</div>
+}
+<div class="card table-container">
+  <div class="table-header d-flex justify-between align-center">
+    <div class="d-flex align-center gap-2">
+      <strong>Solicitudes</strong>
+      <span class="results-badge">{{ credits().length }} resultados</span>
+    </div>
+    <div class="d-flex gap-2">
+      <select class="filter-select"
+        style="min-width: 180px; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); outline: none; background-color: white; font-size: 14px; cursor: pointer; color: var(--text-main);"
+        [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+        <option value="">Todos los estados</option>
+        <option value="Requested">Solicitado</option>
+        <option value="Approved">Aprobado</option>
+        <option value="Rejected">Rechazado</option>
+        <option value="Disbursed">Desembolsado</option>
+      </select>
+    </div>
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Nº CRÉDITO</th>
+        <th>ASOCIADO</th>
+        <th>VALOR</th>
+        <th>ESTADO</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @if (isLoading() && credits().length === 0) {
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted);">Consultando cartera...</td>
+      </tr>
+      } @else if (credits().length === 0) {
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted);">No se encontraron
+          solicitudes</td>
+      </tr>
+      } @else {
+      @for (credit of credits(); track credit.id) {
+      <tr>
+        <td>{{ credit.creditNumber }}</td>
+        <td>
+          <strong>{{ credit.associateName || 'Asociado' }}</strong>
+          <small>CC {{ credit.associateIdentification }}</small>
+        </td>
+        <td><strong>{{ credit.requestedValue | currency:'COP':'symbol-narrow':'1.0-0' }}</strong></td>
+        <td>
+          <span class="status-badge" [ngClass]="{
+                     'status-estudio': credit.status === 'Requested',
+                     'status-aprobado': credit.status === 'Approved',
+                     'status-desembolsado': credit.status === 'Disbursed'
+                   }">
+            {{ credit.status | creditStatus | uppercase }}
+          </span>
+        </td>
+        <td>
+          <div class="action-pill">
+            <button class="btn-pill" (click)="viewDetail(credit.id)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              Ver
+            </button>
+            @if (credit.status !== 'Cancelled' && credit.status !== 'Rejected' && credit.status !== 'Disbursed') {
+            <div class="divider"></div>
+            <button class="btn-pill delete" (click)="prepareDelete(credit)" title="Eliminar crédito">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+              </svg>
+            </button>
+            }
+          </div>
+        </td>
+      </tr>
+      }
+      }
+    </tbody>
+  </table>
+
+  @if (credits().length > 0) {
+  <div class="d-flex justify-center" style="padding: 24px; border-top: 1px solid var(--border-color);">
+    <button class="btn-outline" (click)="loadMore()" [disabled]="isLoading()">
+      {{ isLoading() ? 'Cargando más...' : 'Ver más resultados' }}
+    </button>
+  </div>
+  }
+</div>
+
+<!-- Modal / Drawer de Creación -->
+<app-create-credit [isOpen]="isDrawerOpen()" (close)="onDrawerClose()" (success)="onCreditCreated()">
+</app-create-credit>
+
+<!-- Modal / Drawer de Detalle -->
+<app-credit-detail [isOpen]="isDetalleDrawerOpen()" [creditId]="selectedCredit()"
+  (close)="onDetailDrawerClose()" (updated)="loadCredits(true)">
+</app-credit-detail>
+
+<!-- Modal Confirmación Eliminar -->
+@if (isDeleteModalOpen() && creditToDelete()) {
+<div class="modal-overlay">
+  <div class="modal-content text-center">
+    <div class="warning-icon-svg">
+      <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#D32F2F"
+        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+        <line x1="12" y1="9" x2="12" y2="13"></line>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+    </div>
+    <h4 class="text-danger" style="margin-bottom: 8px;">¿Estás seguro de cancelar este crédito?</h4>
+    <p>Vas a eliminar permanentemente el crédito <strong>{{ creditToDelete()!.creditNumber }}</strong> del asociado
+      <strong>{{ creditToDelete()!.associateName || creditToDelete()!.associateIdentification }}</strong>.<br><br>Esta
+      acción no se puede deshacer.</p>
+
+    <div class="d-flex justify-center gap-3 mt-3">
+      <button class="btn-outline" (click)="cancelDelete()" [disabled]="isDeleting()">Mantener Crédito</button>
+      <button class="btn-primary btn-danger" (click)="executeDelete()" [disabled]="isDeleting()">
+        {{ isDeleting() ? 'Cancelando...' : 'Sí, cancelar crédito' }}
+      </button>
+    </div>
+  </div>
+</div>
+}

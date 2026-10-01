@@ -1,0 +1,56 @@
+    .login-container { height: 100vh; width: 100%; }
+    .login-left {
+      flex: 1; background-color: var(--primary); color: white;
+      flex-direction: column; justify-content: space-between; padding: 40px 60px;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .brand strong { font-size: 16px; display: block; }
+    .brand span { font-size: 11px; opacity: 0.7; }
+    .logo-icon { background: white; color: var(--primary); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: bold; font-size: 14px; }
+    .hero-text { margin-bottom: 100px; }
+    .subtitle { font-size: 10px; letter-spacing: 1px; opacity: 0.7; margin-bottom: 24px; font-weight: 600; }
+    h1 { font-size: 42px; font-weight: 600; line-height: 1.1; margin-bottom: 24px; }
+    .description { font-size: 15px; opacity: 0.8; line-height: 1.5; }
+    .footer-note { font-size: 12px; opacity: 0.6; display: flex; align-items: center; gap: 8px; }
+    
+    .login-right { flex: 1; background-color: var(--bg-main); justify-content: center; }
+    .login-form-wrapper { width: 100%; max-width: 360px; }
+    .section-title { font-size: 10px; font-weight: 600; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+    h2 { font-size: 26px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+    .instruction { font-size: 13px; color: var(--text-muted); }
+    .forgot-link { font-size: 11px; color: var(--text-muted); text-decoration: none; }
+    .demo-note { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 32px; opacity: 0.7; }
+
+    /* Responsive Design for Mobile and Tablets */
+    @media (max-width: 768px) {
+      .login-container {
+        flex-direction: column !important;
+        height: auto;
+        min-height: 100vh;
+      }
+      
+      .login-left {
+        flex: none;
+        padding: 40px 30px;
+        text-align: center;
+        align-items: center;
+      }
+
+      .hero-text {
+        margin-bottom: 40px;
+        margin-top: 20px;
+      }
+
+      h1 {
+        font-size: 32px;
+        br { display: none; }
+      }
+
+      .login-right {
+        flex: none;
+        padding: 40px 30px;
+        min-height: 50vh;
+      }
+    }

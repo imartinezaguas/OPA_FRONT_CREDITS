@@ -1,0 +1,220 @@
+<div class="drawer-overlay" [class.open]="isOpen" (click)="closeDrawer()"></div>
+<div class="drawer" [class.open]="isOpen">
+  <div class="drawer-header d-flex justify-between align-center">
+    <h3>Detalle de Crédito</h3>
+    <button class="btn-close" (click)="closeDrawer()" title="Cerrar">✕</button>
+  </div>
+
+  <div class="drawer-body">
+    <!-- Modal Alert para Errores -->
+    @if (errorMessage()) {
+    <div class="modal-overlay" style="z-index: 3000;">
+      <div class="modal-content text-center" style="max-width: 350px;">
+        <div class="warning-icon-svg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#D32F2F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <h4 class="text-danger" style="margin-bottom: 8px;">Atención</h4>
+        <p [innerHTML]="errorMessage()"></p>
+        <div class="d-flex justify-center mt-3">
+          <button class="btn-primary" (click)="errorMessage.set(null)">Entendido</button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Modal Alert para Éxito -->
+    @if (successMessage()) {
+    <div class="modal-overlay" style="z-index: 3000;">
+      <div class="modal-content text-center" style="max-width: 350px;">
+        <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#197B42" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <h4 style="margin-bottom: 8px; color: #197B42;">¡Éxito!</h4>
+        <p [innerHTML]="successMessage()"></p>
+        <div class="d-flex justify-center mt-3">
+          <button class="btn-primary" style="background-color: #197B42;" (click)="successMessage.set(null)">Aceptar</button>
+        </div>
+      </div>
+    </div>
+    }
+
+    @if (isLoading()) {
+    <div class="d-flex justify-center" style="padding: 40px; color: var(--text-muted);">
+      Cargando detalles...
+    </div>
+    } @else if (detail()) {
+    <div class="detalle-header" style="margin-bottom: 24px;">
+      <div class="d-flex justify-between align-center">
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 0;">{{ detail()!.creditNumber }}</h2>
+        <span class="status-badge" [ngClass]="{
+              'status-estudio': detail()!.status === 'UnderStudy',
+              'status-solicitado': detail()!.status === 'Requested',
+              'status-aprobado': detail()!.status === 'Approved',
+              'status-desembolsado': detail()!.status === 'Disbursed',
+              'status-rechazado': detail()!.status === 'Rejected' || detail()!.status === 'Cancelled'
+            }">
+          {{ detail()!.status | creditStatus | uppercase }}
+        </span>
+      </div>
+
+      <div class="actions d-flex gap-2" style="margin-top: 16px;">
+        @if (detail()!.status === 'Requested') {
+        <button class="btn-primary" (click)="prepareStatusChange('UnderStudy')">Poner en Estudio</button>
+        <button class="btn-outline text-danger" (click)="prepareStatusChange('Rejected')">Rechazar</button>
+        } @else if (detail()!.status === 'UnderStudy') {
+        <button class="btn-primary" (click)="prepareStatusChange('Approved')">Aprobar</button>
+        <button class="btn-outline text-danger" (click)="prepareStatusChange('Rejected')">Rechazar</button>
+        } @else if (detail()!.status === 'Approved') {
+        <button class="btn-primary" (click)="prepareStatusChange('Disbursed')">Desembolsar</button>
+        <button class="btn-outline text-danger" (click)="prepareStatusChange('Cancelled')">Cancelar</button>
+        }
+      </div>
+    </div>
+
+    <div class="info-section">
+      <h4 class="section-title">Información del Asociado</h4>
+      <div class="info-grid">
+        <div class="info-item" style="grid-column: span 2;">
+          <span class="info-label">Asociado</span>
+          <span class="info-value">{{ detail()!.associateName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Identificación</span>
+          <span class="info-value">{{ detail()!.associateIdentification }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <div class="d-flex justify-between align-center" style="margin-bottom: 16px;">
+        <h4 class="section-title" style="margin-bottom: 0;">Condiciones del Crédito</h4>
+        @if (!isEditing()) {
+        <button class="btn-text" (click)="startEdit()" style="font-size: 11px;">✏️ Editar</button>
+        }
+      </div>
+
+      @if (!isEditing()) {
+      <div class="info-grid">
+        <div class="info-item" style="grid-column: span 2;">
+          <span class="info-label">Valor Solicitado</span>
+          <span class="info-value"><strong>{{ detail()!.requestedValue | currency:'COP':'symbol-narrow':'1.0-0'
+              }}</strong></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Tipo de Crédito</span>
+          <span class="info-value">{{ detail()!.creditType }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Tasa de Interés</span>
+          <span class="info-value">{{ detail()!.interestRate }}% M.V</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Nº de Cuotas</span>
+          <span class="info-value">{{ detail()!.numberOfInstallments }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Forma de Pago</span>
+          <span class="info-value">{{ detail()!.paymentMethod }}</span>
+        </div>
+        <div class="info-item" style="grid-column: span 2;">
+          <span class="info-label">Fecha Solicitud</span>
+          <span class="info-value">{{ detail()!.requestDate | date:'dd/MM/yyyy h:mm a' }}</span>
+        </div>
+      </div>
+      } @else {
+      <form (ngSubmit)="saveChanges()" #editForm="ngForm" class="d-flex" style="flex-direction: column; gap: 16px;">
+        <div class="form-group">
+          <label>Valor Solicitado ($)</label>
+          <input type="text" name="valueDisplay" [ngModel]="valueDisplay" (ngModelChange)="onValueChange($event)"
+            required autocomplete="off">
+        </div>
+        <div class="d-flex gap-2">
+          <div class="form-group" style="flex: 1;">
+            <label>Tasa Interés (%)</label>
+            <input type="number" name="interestRate" [(ngModel)]="editData.interestRate" required step="0.1">
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Nº Cuotas</label>
+            <input type="number" name="numberOfInstallments" [(ngModel)]="editData.numberOfInstallments" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Forma Pago</label>
+          <select name="paymentMethod" [(ngModel)]="editData.paymentMethod" required>
+            @for (method of paymentMethods; track method) {
+            <option [value]="method">{{method}}</option>
+            }
+          </select>
+        </div>
+        <div class="d-flex gap-2 justify-end" style="margin-top: 8px;">
+          <button type="button" class="btn-outline" (click)="cancelEdit()" [disabled]="isSaving()">Cancelar</button>
+          <button type="submit" class="btn-primary"
+            [disabled]="!editForm.form.valid || isSaving() || editData.requestedValue <= 0">
+            {{ isSaving() ? 'Guardando...' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+      }
+    </div>
+
+    <div class="info-section">
+      <h4 class="section-title">Historial de Auditoría</h4>
+      @if (!detail()!.histories || detail()!.histories.length === 0) {
+      <p style="font-size: 13px; color: var(--text-muted); text-align: center; padding: 20px;">
+        Este crédito aún no tiene historial de movimientos.
+      </p>
+      } @else {
+      <div class="timeline">
+        @for (item of detail()!.histories; track $index) {
+        <div class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="timeline-header d-flex justify-between">
+              <strong>{{ item.newStatus | creditStatus }}</strong>
+              <small>{{ item.changeDate | date:'dd/MM/yyyy HH:mm' }}</small>
+            </div>
+            <div class="timeline-body">
+              @if (item.previousStatus) {
+              <div class="state-change">
+                <span class="old-state">{{ item.previousStatus | creditStatus }}</span> → <span class="new-state">{{ item.newStatus | creditStatus
+                  }}</span>
+              </div>
+              }
+              @if (item.observation) {
+              <p class="observacion">"{{ item.observation }}"</p>
+              }
+              <div class="usuario">Por: <strong>{{ item.user }}</strong></div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Modal interno para observaciones de cambio de estado -->
+    @if (isStatusModalOpen()) {
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <h4>Cambiar estado a: <strong>{{ selectedStatus() | creditStatus }}</strong></h4>
+        <p>Por favor, ingresa una observación obligatoria para justify este cambio.</p>
+        <textarea rows="4" placeholder="Escriba su observación aquí..." [ngModel]="observationText()"
+          (ngModelChange)="observationText.set($event)"></textarea>
+
+        <div class="d-flex justify-end gap-2 mt-3">
+          <button class="btn-outline" (click)="cancelStatusChange()" [disabled]="isUpdatingStatus()">Cancelar</button>
+          <button class="btn-primary" (click)="confirmStatusChange()"
+            [disabled]="!observationText().trim() || isUpdatingStatus()">
+            {{ isUpdatingStatus() ? 'Procesando...' : 'Confirmar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>
